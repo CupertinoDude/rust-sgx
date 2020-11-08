@@ -1181,10 +1181,7 @@ async fn trap_attached_debugger(tcs: usize) {
     // Synchronized
     unsafe {
         let old = signal::sigaction(signal::SIGTRAP, &sig_action).unwrap();
-        llvm_asm!("int3" : /* No output */
-                    : /*input */ "{rbx}"(tcs)
-                    :/* No clobber */
-                    :"volatile");
+        asm!("int3", in("rbx") tcs, options(nomem, nostack, att_syntax));
         signal::sigaction(signal::SIGTRAP, &old).unwrap();
     }
 }
